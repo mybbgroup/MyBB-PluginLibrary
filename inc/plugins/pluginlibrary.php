@@ -29,15 +29,15 @@ if(!defined("IN_MYBB"))
 function pluginlibrary_info()
 {
     return array(
-        "name"          => "PluginLibrary",
+        "name"          => "PluginLibrary (Updated for PHP 8)",
         "description"   => "A collection of useful functions for other plugins.",
         "website"       => "http://mods.mybb.com/view/pluginlibrary",
         "author"        => "Andreas Klauer",
         "authorsite"    => "mailto:Andreas.Klauer@metamorpher.de",
-        "version"       => "13",
+        "version"       => "14-dev",
         "guid"          => "839e9d72e2875a51fccbc0257dfeda03",
         "compatibility" => "18*",
-        "codename"      => "pluginlibrary",
+        "codename"      => "pluginlibrary_php_eight_update",
         );
 }
 
@@ -902,6 +902,10 @@ class PluginLibrary
             $result[] = substr($text, $pos, $start-$pos);
 
             // insert before
+            if(!isset($edit['before']))
+            {
+                $edit['before'] = '';
+            }
             $result[] = $this->_comment($ins, $edit['before']);
 
             // original matched text
@@ -910,8 +914,16 @@ class PluginLibrary
 
             $dirty = 0;
 
-            if($edit['replace']
-               || is_string($edit['replace']) || is_array($edit['replace']))
+            if(isset($edit['replace'])
+               &&
+               (
+                $edit['replace']
+                ||
+                is_string($edit['replace'])
+                ||
+                is_array($edit['replace'])
+               )
+              )
             {
                 // insert match (commented out)
                 $result[] = $this->_comment($del, $match);

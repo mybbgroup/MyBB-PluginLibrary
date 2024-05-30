@@ -1,7 +1,10 @@
-PluginLibrary for MyBB
+PluginLibrary for MyBB (Updated for PHP 8)
 A collection of useful functions used by other plugins.
 
-https://github.com/frostschutz/PluginLibrary
+https://github.com/mybbgroup/MyBB-PluginLibrary
+
+PHP 8 update forked from the original at:
+https://github.com/frostschutz/MyBB-PluginLibrary
 
 Users:
 
