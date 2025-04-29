@@ -19,9 +19,8 @@
  */
 
 // Disallow direct access to this file for security reasons
-if(!defined("IN_MYBB"))
-{
-    die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
+if (!defined('IN_MYBB')) {
+    die('Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.');
 }
 
 /**
@@ -29,32 +28,30 @@ if(!defined("IN_MYBB"))
  *
  *   Define the path to the plugin library, if it isn't defined yet.
  */
-if(!defined("PLUGINLIBRARY"))
-{
-    define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
+if (!defined('PLUGINLIBRARY')) {
+    define('PLUGINLIBRARY', MYBB_ROOT . 'inc/plugins/pluginlibrary.php');
 }
 
-$plugins->add_hook("pre_output_page", "hello_pl_world");
-$plugins->add_hook("admin_config_plugins_begin", "hello_pl_edit");
+$plugins->add_hook('pre_output_page', 'hello_pl_world');
+$plugins->add_hook('admin_config_plugins_begin', 'hello_pl_edit');
 
 function hello_pl_info()
 {
     global $mybb, $plugins_cache;
 
     $info = array(
-        "name"          => "Hello PluginLibrary!",
-        "description"   => "A sample plugin for developers that demonstrates the features of the PluginLibrary.",
-        "website"       => "http://mods.mybb.com/view/pluginlibrary",
-        "author"        => "Andreas Klauer",
-        "authorsite"    => "mailto:Andreas.Klauer@metamorpher.de",
-        "version"       => "hello_pl.php",
-        "guid"          => "",
-        "compatibility" => "18*"
-        );
+        'name' => 'Hello PluginLibrary!',
+        'description' => 'A sample plugin for developers that demonstrates the features of the PluginLibrary.',
+        'website' => 'http://mods.mybb.com/view/pluginlibrary',
+        'author' => 'Andreas Klauer',
+        'authorsite' => 'mailto:Andreas.Klauer@metamorpher.de',
+        'version' => 'hello_pl.php',
+        'guid' => '',
+        'compatibility' => '18*'
+    );
 
     // Display some extra information when installed and active.
-    if(hello_pl_is_installed() && $plugins_cache['active']['hello_pl'])
-    {
+    if (hello_pl_is_installed() && $plugins_cache['active']['hello_pl']) {
         global $PL;
         $PL or require_once PLUGINLIBRARY;
 
@@ -66,19 +63,27 @@ function hello_pl_info()
          * Append parameters to an URL that may or may not have ?query.
          */
 
-        $editurl = $PL->url_append("index.php?module=config-plugins",
-                                   array("hello_pl" => "edit",
-                                         "my_post_key" => $mybb->post_code));
-        $undourl = $PL->url_append("index.php",
-                                   array("module" => "config-plugins",
-                                         "hello_pl" => "undo",
-                                         "my_post_key" => $mybb->post_code));
+        $editurl = $PL->url_append(
+            'index.php?module=config-plugins',
+            array(
+                'hello_pl' => 'edit',
+                'my_post_key' => $mybb->post_code
+            )
+        );
+        $undourl = $PL->url_append(
+            'index.php',
+            array(
+                'module' => 'config-plugins',
+                'hello_pl' => 'undo',
+                'my_post_key' => $mybb->post_code
+            )
+        );
 
-        $editurl = "index.php?module=config-plugins&amp;hello_pl=edit&amp;my_post_key=".$mybb->post_code;
-        $undourl = "index.php?module=config-plugins&amp;hello_pl=undo&amp;my_post_key=".$mybb->post_code;
+        $editurl = 'index.php?module=config-plugins&amp;hello_pl=edit&amp;my_post_key=' . $mybb->post_code;
+        $undourl = 'index.php?module=config-plugins&amp;hello_pl=undo&amp;my_post_key=' . $mybb->post_code;
 
-        $info["description"] .= "<br /><a href=\"{$editurl}\">Make edits to hello_pl.php</a>.";
-        $info["description"] .= "    | <a href=\"{$undourl}\">Undo edits to hello_pl.php</a>.";
+        $info['description'] .= "<br /><a href=\"{$editurl}\">Make edits to hello_pl.php</a>.";
+        $info['description'] .= "    | <a href=\"{$undourl}\">Undo edits to hello_pl.php</a>.";
     }
 
     return $info;
@@ -90,8 +95,7 @@ function hello_pl_is_installed()
 
     // This plugin creates settings on install. Check if setting exists.
     // Another example would be $db->table_exists() for database tables.
-    if(isset($settings['hello_pl_foobar']))
-    {
+    if (isset($settings['hello_pl_foobar'])) {
         return true;
     }
 }
@@ -108,10 +112,12 @@ function hello_pl_install()
      *     preferably including a download link to the missing dependency.
      *   - use admin_redirect() to cancel the installation.
      */
-    if(!file_exists(PLUGINLIBRARY))
-    {
-        flash_message("The selected plugin could not be installed because <a href=\"http://mods.mybb.com/view/pluginlibrary\">PluginLibrary</a> is missing.", "error");
-        admin_redirect("index.php?module=config-plugins");
+    if (!file_exists(PLUGINLIBRARY)) {
+        flash_message(
+            "The selected plugin could not be installed because <a href=\"http://mods.mybb.com/view/pluginlibrary\">PluginLibrary</a> is missing.",
+            'error'
+        );
+        admin_redirect('index.php?module=config-plugins');
     }
 
     /**
@@ -133,10 +139,12 @@ function hello_pl_install()
      *   - compare $PL->version to the version number you need.
      *   - same procedure as DEPENDENCY CHECK
      */
-    if($PL->version < 11)
-    {
-        flash_message("The selected plugin could not be installed because <a href=\"http://mods.mybb.com/view/pluginlibrary\">PluginLibrary</a> is too old.", "error");
-        admin_redirect("index.php?module=config-plugins");
+    if ($PL->version < 11) {
+        flash_message(
+            "The selected plugin could not be installed because <a href=\"http://mods.mybb.com/view/pluginlibrary\">PluginLibrary</a> is too old.",
+            'error'
+        );
+        admin_redirect('index.php?module=config-plugins');
     }
 }
 
@@ -152,9 +160,10 @@ function hello_pl_uninstall()
      *
      *   Delete one or more setting groups and their settings.
      */
-    $PL->settings_delete("hello_pl"
-                         // , true /* optional, multiple groups */
-        );
+    $PL->settings_delete(
+        'hello_pl'
+    // , true /* optional, multiple groups */
+    );
 
     /**
      * TEMPLATES DELETE
@@ -163,9 +172,10 @@ function hello_pl_uninstall()
      *
      *   Delete one or more template groups and their templates.
      */
-    $PL->templates_delete("hellopl"
-                          // , true /* optional, multiple groups */
-        );
+    $PL->templates_delete(
+        'hellopl'
+    // , true /* optional, multiple groups */
+    );
 
     /**
      * STYLESHEET DELETE
@@ -190,37 +200,38 @@ function hello_pl_activate()
      *   Create a setting group with any number of settings with $PL->settings()
      *   If the setting group already exists, the settings are updated properly.
      */
-    $PL->settings("hello_pl", // group name and settings prefix
-                  "Hello PluginLibrary!",
-                  "Setting group for the Hello PluginLibrary sample plugin.",
-                  array(
-                      "foobar" => array(
-                          "title" => "Foo Bar",
-                          "description" => "The setting name depends on the prefix (hello_pl) and the key (foobar). The name of this setting is hello_pl_foobar.",
-                          ),
-                      "no" => array(
-                          "title" => "Simple Yes/No setting",
-                          "description" => "The default is no. The name of this setting is hello_pl_no.",
-                          ),
-                      "yes" => array(
-                          "title" => "Yes/No setting",
-                          "description" => "This one is set to yes. The name of this setting is hello_pl_yes.",
-                          "value" => 1,
-                          ),
-                      "text" => array(
-                          "title" => "Text setting",
-                          "description" => "Give me a word. The name of this setting is hello_pl_text.",
-                          "optionscode" => "text",
-                          ),
-                      "textarea" => array(
-                          "title" => "Text area (hello_pl_textarea)",
-                          "description" => "Multiple lines. The name of this setting is hello_pl_textarea.",
-                          "optionscode" => "textarea",
-                          "value" => "line1\nline2",
-                          ),
-                      )
-                  // , true /* optional,  prints a language file */
-        );
+    $PL->settings(
+        'hello_pl', // group name and settings prefix
+        'Hello PluginLibrary!',
+        'Setting group for the Hello PluginLibrary sample plugin.',
+        array(
+            'foobar' => array(
+                'title' => 'Foo Bar',
+                'description' => 'The setting name depends on the prefix (hello_pl) and the key (foobar). The name of this setting is hello_pl_foobar.',
+            ),
+            'no' => array(
+                'title' => 'Simple Yes/No setting',
+                'description' => 'The default is no. The name of this setting is hello_pl_no.',
+            ),
+            'yes' => array(
+                'title' => 'Yes/No setting',
+                'description' => 'This one is set to yes. The name of this setting is hello_pl_yes.',
+                'value' => 1,
+            ),
+            'text' => array(
+                'title' => 'Text setting',
+                'description' => 'Give me a word. The name of this setting is hello_pl_text.',
+                'optionscode' => 'text',
+            ),
+            'textarea' => array(
+                'title' => 'Text area (hello_pl_textarea)',
+                'description' => 'Multiple lines. The name of this setting is hello_pl_textarea.',
+                'optionscode' => 'textarea',
+                'value' => "line1\nline2",
+            ),
+        )
+    // , true /* optional,  prints a language file */
+    );
 
     /**
      * TEMPLATES
@@ -233,14 +244,15 @@ function hello_pl_activate()
      *
      *   Note: prefix must not contain _ for templates.
      */
-    $PL->templates("hellopl", // template prefix, must not contain _
-                   "Hello Pluginlibrary!", // you can also use "<lang:your_language_variable>" here
-                   array(
-                       "" => "<p>This is the <b>hellopl</b> template...</p>",
-                       "example" => "<p>...and this is the <i>hellopl_example</i> template.</p>",
-                       "other" => "Another template using {\$hellopl} and {\$hellopl_example}.",
-                       )
-        );
+    $PL->templates(
+        'hellopl', // template prefix, must not contain _
+        'Hello Pluginlibrary!', // you can also use "<lang:your_language_variable>" here
+        array(
+            '' => '<p>This is the <b>hellopl</b> template...</p>',
+            'example' => '<p>...and this is the <i>hellopl_example</i> template.</p>',
+            'other' => "Another template using {\$hellopl} and {\$hellopl_example}.",
+        )
+    );
 
     /**
      * STYLESHEET
@@ -250,17 +262,19 @@ function hello_pl_activate()
      *   Create, update and activate a stylesheet. Prefix the name with
      *   something unique to your plugin to avoid collisions.
      */
-    $css = "#pluginlibrary { background: #026CB1 url(images/thead_bg.gif); color: white; }";
+    $css = '#pluginlibrary { background: #026CB1 url(images/thead_bg.gif); color: white; }';
     $PL->stylesheet('hellopl_test', $css);
-    $PL->stylesheet('hellopl_sendpm',
-                    array(
-                        '#pluginlibrary' => array(
-                            'text-align' => 'center',
-                            'font-style' => 'italic',
-                            'border' => 'dashed red 5px',
-                            ),
-                        ),
-                    array('private.php' => 'send'));
+    $PL->stylesheet(
+        'hellopl_sendpm',
+        array(
+            '#pluginlibrary' => array(
+                'text-align' => 'center',
+                'font-style' => 'italic',
+                'border' => 'dashed red 5px',
+            ),
+        ),
+        array('private.php' => 'send')
+    );
 }
 
 function hello_pl_deactivate()
@@ -275,9 +289,10 @@ function hello_pl_deactivate()
      *
      *   Delete one or more caches.
      */
-    $PL->cache_delete("hello_pl"
-                      // , true /* optional, multiple caches */
-        );
+    $PL->cache_delete(
+        'hello_pl'
+    // , true /* optional, multiple caches */
+    );
 
     /**
      * STYLESHEET DEACTIVATE
@@ -295,8 +310,7 @@ function hello_pl_edit()
     global $mybb;
 
     // Only perform edits if we were given the correct post key.
-    if($mybb->input['my_post_key'] != $mybb->post_code)
-    {
+    if ($mybb->input['my_post_key'] != $mybb->post_code) {
         return;
     }
 
@@ -311,18 +325,18 @@ function hello_pl_edit()
      *   Make or update one or more changes to a core file.
      *   Edits the file directly or, lacking permissions, returns a string.
      */
-    if($mybb->input['hello_pl'] == 'edit')
-    {
-        $result = $PL->edit_core("hello_pl", "inc/plugins/hello_pl.php",
-                                 array('search' => array("\"name\"", "=>", "\"Hello PluginLibrary!\"", ","),
-                                       'replace' => "\"name\"=>\"Hello EditCore!\","),
-                                 true // optional, try to apply the change
-                                 // , $debug // optional, obtain debug info about the edits
-            );
-    }
-
-    else if($mybb->input['hello_pl'] == 'undo')
-    {
+    if ($mybb->input['hello_pl'] == 'edit') {
+        $result = $PL->edit_core(
+            'hello_pl',
+            'inc/plugins/hello_pl.php',
+            array(
+                'search' => array("\"name\"", '=>', "\"Hello PluginLibrary!\"", ','),
+                'replace' => "\"name\"=>\"Hello EditCore!\","
+            ),
+            true // optional, try to apply the change
+        // , $debug // optional, obtain debug info about the edits
+        );
+    } elseif ($mybb->input['hello_pl'] == 'undo') {
         /**
          * UNDO EDIT CORE
          *
@@ -331,30 +345,28 @@ function hello_pl_edit()
          *   If you want to undo your changes, leave out the search.
          *   This undoes your changes (updates your edits to change nothing).
          */
-        $result = $PL->edit_core("hello_pl", "inc/plugins/hello_pl.php",
-                                 array(), // leave search empty, i.e. no edits
-                                 true // optional, try to apply the change
-            );
-    }
-
-    else
-    {
+        $result = $PL->edit_core(
+            'hello_pl',
+            'inc/plugins/hello_pl.php',
+            array(), // leave search empty, i.e. no edits
+            true // optional, try to apply the change
+        );
+    } else {
         // bad input parameter
         return;
     }
 
-    if($result === true)
-    {
+    if ($result === true) {
         // redirect with success
-        flash_message("The file inc/plugins/hello_pl.php was modified successfully.", "success");
-        admin_redirect("index.php?module=config-plugins");
-    }
-
-    else
-    {
+        flash_message('The file inc/plugins/hello_pl.php was modified successfully.', 'success');
+        admin_redirect('index.php?module=config-plugins');
+    } else {
         // redirect with failure (could offer the result string for download instead)
-        flash_message("The file inc/plugins/hello_pl.php could not be edited. Are the CHMOD settings correct?", "error");
-        admin_redirect("index.php?module=config-plugins");
+        flash_message(
+            'The file inc/plugins/hello_pl.php could not be edited. Are the CHMOD settings correct?',
+            'error'
+        );
+        admin_redirect('index.php?module=config-plugins');
     }
 }
 
@@ -362,8 +374,12 @@ function hello_pl_world($page)
 {
     global $templates;
 
-    eval("\$example = \"".$templates->get("hellopl_example")."\";");
+    eval("\$example = \"" . $templates->get('hellopl_example') . "\";");
 
-    $page = str_replace("<div id=\"content\">", "<div id=\"content\"><div id=\"pluginlibrary\">Hello PluginLibrary!<p>This is a sample PluginLibrary Plugin (which can be disabled!) that displays this message on all pages.</p>{$example}</div>", $page);
+    $page = str_replace(
+        "<div id=\"content\">",
+        "<div id=\"content\"><div id=\"pluginlibrary\">Hello PluginLibrary!<p>This is a sample PluginLibrary Plugin (which can be disabled!) that displays this message on all pages.</p>{$example}</div>",
+        $page
+    );
     return $page;
 }
