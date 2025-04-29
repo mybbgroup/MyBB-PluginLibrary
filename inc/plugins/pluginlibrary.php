@@ -25,7 +25,7 @@ if (!defined('IN_MYBB')) {
 
 /* --- Plugin API: --- */
 
-function pluginlibrary_info()
+function pluginlibrary_info(): array
 {
     return array(
         'name' => 'PluginLibrary (Updated for PHP 8)',
@@ -40,7 +40,7 @@ function pluginlibrary_info()
     );
 }
 
-function pluginlibrary_is_installed()
+function pluginlibrary_is_installed(): bool
 {
     // Don't try this at home.
     return false;
@@ -111,7 +111,7 @@ class PluginLibrary
         );
 
         // Check if the group already exists.
-        $query = $db->simple_select('settinggroups', 'gid', "name='${group['name']}'");
+        $query = $db->simple_select('settinggroups', 'gid', "name='{$group['name']}'");
 
         if ($row = $db->fetch_array($query)) {
             // We already have a group. Update title and description.
@@ -533,8 +533,13 @@ class PluginLibrary
             $query = $db->simple_select('themestylesheets', 'tid,name', $where);
 
             while ($stylesheet = $db->fetch_array($query)) {
-                @unlink(MYBB_ROOT . "cache/themes/{$stylesheet['tid']}_{$stylesheet['name']}");
-                @unlink(MYBB_ROOT . "cache/themes/theme{$stylesheet['tid']}/{$stylesheet['name']}");
+                if (file_exists(MYBB_ROOT . "cache/themes/{$stylesheet['tid']}_{$stylesheet['name']}")) {
+                    unlink(MYBB_ROOT . "cache/themes/{$stylesheet['tid']}_{$stylesheet['name']}");
+                }
+
+                if (file_exists(MYBB_ROOT . "cache/themes/theme{$stylesheet['tid']}/{$stylesheet['name']}")) {
+                    unlink(MYBB_ROOT . "cache/themes/theme{$stylesheet['tid']}/{$stylesheet['name']}");
+                }
             }
 
             $db->delete_query('themestylesheets', $where);
@@ -661,7 +666,7 @@ class PluginLibrary
 
             // ...from the filesystem...
             $start = strlen(MYBB_ROOT . 'cache/');
-            foreach ((array)@glob(MYBB_ROOT . "cache/{$name}*.php") as $filename) {
+            foreach ((array)glob(MYBB_ROOT . "cache/{$name}*.php") as $filename) {
                 if ($filename) {
                     $filename = substr($filename, $start, strlen($filename) - 4 - $start);
                     $names[$filename] = 0;
@@ -683,7 +688,7 @@ class PluginLibrary
     /**
      * insert comment at the beginning of each line
      */
-    public function _comment($comment, $code)
+    public function _comment($comment, $code): string
     {
         if (is_array($code)) {
             $code = implode("\n", $code);
@@ -804,7 +809,7 @@ class PluginLibrary
                 $start = $pos;
             }
 
-            if (!count($edit['matches']) && !$edit['none']) {
+            if (!count($edit['matches']) && empty($edit['none'])) {
                 $edit['error'] = 'zero matches not allowed for this edit';
                 return false;
             }
@@ -879,7 +884,7 @@ class PluginLibrary
             }
 
             // insert after
-            $result[] = $this->_comment($ins, $edit['after']);
+            $result[] = $this->_comment($ins, isset($edit['after']) ? $edit['after'] : '');
 
             if ($dirty && !strlen($result[count($result) - 1])) {
                 // close open comment
@@ -946,7 +951,7 @@ class PluginLibrary
         }
 
         // try to write the file
-        if ($apply && @file_put_contents(MYBB_ROOT . $file, $result) !== false) {
+        if ($apply && is_writeable(MYBB_ROOT . $file) && file_put_contents(MYBB_ROOT . $file, $result) !== false) {
             // changes successfully applied
             return true;
         }
@@ -960,30 +965,26 @@ class PluginLibrary
     /**
      * is_member
      */
-    public function is_member($groups, $user = false)
+    public function is_member($groups, $user = false): array
     {
         global $mybb;
 
         // Default to current user.
         if ($user === false) {
             $user = $mybb->user;
-        } elseif (is_array($user)) {
-            // do nothing
-        } else {
+        } elseif (!is_array($user)) {
             // assume it's a UID
             $user = get_user($user);
         }
 
         // Collect the groups the user is in.
-        $memberships = explode(',', $user['additionalgroups']);
+        $memberships = explode(',', $user['additionalgroups'] ?? '');
         $memberships[] = $user['usergroup'];
 
         // Convert search to an array of group ids
-        if (is_array($groups)) {
-            // already an array, do nothing
-        } elseif (is_string($groups)) {
+        if (is_string($groups)) {
             $groups = explode(',', $groups);
-        } else {
+        } elseif (!is_array($groups)) {
             // probably a single number
             $groups = (array)$groups;
         }
@@ -1035,7 +1036,7 @@ class PluginLibrary
     /**
      * _xml_element
      */
-    public function _xml_tag($tag, $content, $indent = 0)
+    public function _xml_tag($tag, $content, $indent = 0): string
     {
         $nl = "\n" . str_repeat(' ', $indent);
         $result = '';
@@ -1069,7 +1070,7 @@ class PluginLibrary
     /**
      * _xml_array
      */
-    public function _xml_array($array, $indent = 0)
+    public function _xml_array($array, $indent = 0): string
     {
         $nl = "\n" . str_repeat(' ', $indent);
         $nl2 = $nl . '  ';
@@ -1128,12 +1129,12 @@ class PluginLibrary
                 $filename = trim(basename('/' . $filename));
 
                 // Output the XML directly.
-                @header('Content-Type: application/xml; charset=UTF-8');
-                @header('Expires: Sun, 20 Feb 2011 13:47:47 GMT'); // past
-                @header('Last-Modified: ' . gmdate('D, d M Y H:i:s T'));
-                @header('Pragma: no-cache');
-                @header('Content-Disposition: attachment; filename="' . $filename . '"');
-                @header('Content-Length: ' . strlen($result));
+                header('Content-Type: application/xml; charset=UTF-8');
+                header('Expires: Sun, 20 Feb 2011 13:47:47 GMT'); // past
+                header('Last-Modified: ' . gmdate('D, d M Y H:i:s T'));
+                header('Pragma: no-cache');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+                header('Content-Length: ' . strlen($result));
                 echo $result;
                 exit;
             }

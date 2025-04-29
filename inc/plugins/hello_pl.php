@@ -32,10 +32,12 @@ if (!defined('PLUGINLIBRARY')) {
     define('PLUGINLIBRARY', MYBB_ROOT . 'inc/plugins/pluginlibrary.php');
 }
 
+global $plugins;
+
 $plugins->add_hook('pre_output_page', 'hello_pl_world');
 $plugins->add_hook('admin_config_plugins_begin', 'hello_pl_edit');
 
-function hello_pl_info()
+function hello_pl_info(): array
 {
     global $mybb, $plugins_cache;
 
@@ -89,7 +91,7 @@ function hello_pl_info()
     return $info;
 }
 
-function hello_pl_is_installed()
+function hello_pl_is_installed(): bool
 {
     global $settings;
 
@@ -98,6 +100,8 @@ function hello_pl_is_installed()
     if (isset($settings['hello_pl_foobar'])) {
         return true;
     }
+
+    return false;
 }
 
 function hello_pl_install()
@@ -310,7 +314,7 @@ function hello_pl_edit()
     global $mybb;
 
     // Only perform edits if we were given the correct post key.
-    if ($mybb->input['my_post_key'] != $mybb->post_code) {
+    if ($mybb->get_input('my_post_key') != $mybb->post_code) {
         return;
     }
 
@@ -325,7 +329,7 @@ function hello_pl_edit()
      *   Make or update one or more changes to a core file.
      *   Edits the file directly or, lacking permissions, returns a string.
      */
-    if ($mybb->input['hello_pl'] == 'edit') {
+    if ($mybb->get_input('hello_pl') == 'edit') {
         $result = $PL->edit_core(
             'hello_pl',
             'inc/plugins/hello_pl.php',
@@ -336,7 +340,7 @@ function hello_pl_edit()
             true // optional, try to apply the change
         // , $debug // optional, obtain debug info about the edits
         );
-    } elseif ($mybb->input['hello_pl'] == 'undo') {
+    } elseif ($mybb->get_input('hello_pl') == 'undo') {
         /**
          * UNDO EDIT CORE
          *
@@ -370,16 +374,17 @@ function hello_pl_edit()
     }
 }
 
-function hello_pl_world($page)
+function hello_pl_world(string &$page)
 {
     global $templates;
 
-    eval("\$example = \"" . $templates->get('hellopl_example') . "\";");
+    $example = eval($templates->render('hellopl_example'));
 
     $page = str_replace(
         "<div id=\"content\">",
         "<div id=\"content\"><div id=\"pluginlibrary\">Hello PluginLibrary!<p>This is a sample PluginLibrary Plugin (which can be disabled!) that displays this message on all pages.</p>{$example}</div>",
         $page
     );
+
     return $page;
 }
